@@ -1,0 +1,147 @@
+---
+title: "Bhuvi FML Assign 4"
+author: "Bhuvaneshwar reddy kosna"
+date: "2023-11-20"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r}
+##Load the librabries
+
+library(factoextra)
+library(ggplot2)
+library(tidyverse)
+library(ISLR)
+library(NbClust)
+library(cluster)
+
+```
+
+
+```{r}
+## Import the data from csv file.
+
+Pharmaceutical <- read.csv("C:\\Users\\bhuva\\Downloads\\Pharmaceuticals.csv")
+view(Pharmaceutical)
+```
+
+## a. Use only the numerical variables (1 to 9) to cluster the 21 firms. Justify the various choices made in conducting the cluster analysis, such as weights for different variables, the specific clustering algorithm(s) used, the number of clusters formed, and so on.
+
+```{r}
+##Create a new data frame 'R' by removing rows with missing values from 'Pharmaceuticals'
+R <- na.omit(Pharmaceutical)
+summary(R)
+
+```
+
+```{r}
+#Set row names of the data frame 'R' to the values in its first column
+row.names(R) <- R[,1]
+#Create a new data frame 'Pharmacy' containing columns 3 to 11 from 'A'
+Pharmacy <- R[,3:11]
+#Display the rows of the 'Pharmacy' data frame
+head(Pharmacy)
+```
+
+
+```{r}
+# Scale the data in the 'Pharmacist' data frame to standardize variables
+Pharmacist <- scale (Pharmacy)
+#Display the rows of the 'Pharmacist' data frame
+head(Pharmacist)
+```
+```{r}
+
+fviz_nbclust(Pharmacist, kmeans, method = "wss") + labs(subtitle = "Elbow Method")
+
+```
+
+```{r}
+fviz_nbclust(Pharmacist, kmeans, method = "silhouette") + labs(subtitle = "silhouette Method")
+
+```
+
+
+```{r}
+# Set a seed for reproducibility
+set.seed(64060)
+# Perform k-means clustering on the 'Pharmacist' data with 5 clusters, using multiple starting configurations
+k5 <- kmeans(Pharmacist, centers = 5, nstart = 25)
+# Display the cluster centers obtained from the k-means clustering
+k5$centers
+
+```
+
+```{r}
+
+fviz_cluster(k5, data = Pharmacist)
+```
+```{r}
+# Calculate the Euclidean distance matrix between observations in the 'Pharmacist' dataset
+distance <- dist(Pharmacist, method = "euclidean")
+fviz_dist(distance)
+```
+
+```{r}
+# Set the CRAN mirror to a specific location
+options(repos = c(CRAN = "https://cran.rstudio.com/"))
+```
+
+```{r}
+
+fit <-kmeans(Pharmacist, 5)
+aggregate(Pharmacist, by = list(fit$cluster), FUN=mean)
+```
+
+```{r}
+# Create a new data frame 'Pharmacist1' by combining the original data 'Pharmacist' with the cluster assignments from 'fit$cluster'
+Pharmacist1 <- data.frame(Pharmacist, fit$cluster)
+
+# Display the contents of the newly created data frame 'Pharmacist1'
+Pharmacist1
+
+```
+```{r}
+
+clusplot(Pharmacist, fit$cluster, color = TRUE, shade = FALSE, labels = 2, lines = 0)
+
+```
+
+## b. Interpret the clusters with respect to the numerical variables used in forming the clusters.
+
+##JNJ, MRK, PFE, and GSK are among the companies that make up Cluster 1; these businesses have the biggest market capitalizations and rely on financing to run their businesses effectively. (less leverage than 0.47).
+
+#The stocks of Cluster 2 companies, AHM, WPI, and AVE, have the potential to outperform the current market benchmark because of their lowest asset turnover and beta values.
+
+#They have the quickest revenue growth in Cluster 3, are the least capitalized company on the market, and are unable to even raise capital to sustain their operations. (ELN, LVX, CHTT, MRX). The high beta values of these business stocks contribute to their impressive returns.
+
+#Cluster 4: RHA, BAY, and AGN They have the lowest earnings due to their highest expense to earnings ratio. It is also unlikely that investing in these companies will result in the highest returns because their Return on Equity is less than 1.
+
+##Cluster-5 ABT, SGP, NVS, AZN, BMY, and WYE make up the group. They have the highest net profit margin, the highest asset turnover, and the lowest rate of sales development. These companies' expansion has led to their success.
+
+## c. Is there a pattern in the clusters with respect to the numerical variables (10 to 12)? (those not used in forming the clusters)
+
+#The stocks in Cluster-1 are not particularly strong or have shown notable returns in the recent past. Instead, they have a mediocre personality.
+
+#Cluster-2's businesses are dispersed equally throughout the globe. Their concepts have been widely accepted by the media, despite their strong technical foundation.
+
+#Cluster 3: Because of the stability of their finances, they are only moderately advised despite having a high leverage ratio.
+
+#Parts within Group 4 According to the media, they ought to be kept around because they might one day become extremely valuable assets.
+
+#Cluster No. 5: Businesses with a high net profit margin are encouraged to remain in the cluster for an extended period of time.
+
+## d. Provide an appropriate name for each cluster using any or all of the variables in the dataset.
+
+#Cluster 1: A practical approach (given that these are respectable stocks).
+
+#A group of gold miners, Cluster-2 has a low beta, but the market is extremely bullish on them..
+
+#TThe initial setup, also known as #Cluster-3, consisted of equities that had strong financial and other fundamentals.
+
+#Cluster 4: The initial configuration (stocks with strong financials and fundamentals).
+
+#The recurrent cluster is cluster 5. It is strongly advised to include the stocks in the portfolio because a sizable net profit margin suggests that the company is operating profitably.
